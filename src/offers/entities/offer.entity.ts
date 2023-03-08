@@ -4,6 +4,7 @@ import {
   Column,
   CreateDateColumn,
   UpdateDateColumn,
+  ManyToOne,
 } from 'typeorm';
 import {
   Contains,
@@ -19,6 +20,11 @@ import {
   Max,
 } from 'class-validator';
 
+//import { Offer } from './../../offers/entities/offer.entity';
+import { Wish } from './../../wishes/entities/wish.entity';
+import { Wishlist } from './../../wishlists/entities/wishlist.entity';
+import { User } from './../../users/entities/user.entity';
+
 @Entity()
 export class Offer {
   @PrimaryGeneratedColumn()
@@ -32,14 +38,11 @@ export class Offer {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @Column()
-  user: string;
+  @ManyToOne(() => User, (user) => user.id)
+  user: User;
 
-  @Column({
-    type: 'varchar',
-  })
-  @IsUrl()
-  item: string;
+  @ManyToOne(() => Wish, (wish) => wish.id)
+  item: Wish;
 
   @Column({
     type: 'decimal',

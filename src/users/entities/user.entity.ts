@@ -4,6 +4,7 @@ import {
   Column,
   CreateDateColumn,
   UpdateDateColumn,
+  OneToMany,
 } from 'typeorm';
 import {
   Contains,
@@ -16,6 +17,10 @@ import {
   Min,
   Max,
 } from 'class-validator';
+
+import { Offer } from './../../offers/entities/offer.entity';
+import { Wish } from './../../wishes/entities/wish.entity';
+import { Wishlist } from './../../wishlists/entities/wishlist.entity';
 
 @Entity()
 export class User {
@@ -66,12 +71,12 @@ export class User {
   })
   password: string;
 
-  @Column()
-  wishes: string;
+  @OneToMany(() => Wish, (wish) => wish.owner)
+  wishes: Wish[];
 
-  @Column()
-  offers: string;
+  @OneToMany(() => Offer, (offer) => offer.user)
+  offers: Offer[];
 
-  @Column()
-  wishlists: string;
+  @OneToMany(() => Wishlist, (wishlist) => wishlist.id)
+  wishlists: Wishlist[];
 }

@@ -4,6 +4,8 @@ import {
   Column,
   CreateDateColumn,
   UpdateDateColumn,
+  ManyToOne,
+  OneToMany,
 } from 'typeorm';
 import {
   Contains,
@@ -17,6 +19,11 @@ import {
   Min,
   Max,
 } from 'class-validator';
+
+import { Offer } from './../../offers/entities/offer.entity';
+//import { Wish } from './../../wishes/entities/wish.entity';
+import { Wishlist } from './../../wishlists/entities/wishlist.entity';
+import { User } from './../../users/entities/user.entity';
 
 @Entity()
 export class Wish {
@@ -46,6 +53,7 @@ export class Wish {
 
   @Column({
     type: 'varchar',
+    nullable: true,
   })
   @IsUrl()
   image: string;
@@ -60,12 +68,13 @@ export class Wish {
   @Column({
     type: 'decimal',
     scale: 2,
+    nullable: true,
   })
   @IsNumber({ maxDecimalPlaces: 2 })
   raised: number;
 
-  @Column()
-  owner: string;
+  @ManyToOne(() => User, (user) => user.id)
+  owner: User;
 
   @Column({
     type: 'varchar',
@@ -74,10 +83,10 @@ export class Wish {
   @Length(1, 1024)
   description: string;
 
-  @Column()
-  offers: Array<string>;
+  @OneToMany(() => Offer, (offer) => offer.item)
+  offers: Offer[];
 
-  @Column()
+  @Column({ type: 'integer', nullable: true })
   @IsInt()
   copied: number;
 }

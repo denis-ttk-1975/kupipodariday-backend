@@ -4,6 +4,7 @@ import {
   Column,
   CreateDateColumn,
   UpdateDateColumn,
+  OneToMany,
 } from 'typeorm';
 import {
   Contains,
@@ -16,6 +17,11 @@ import {
   Min,
   Max,
 } from 'class-validator';
+
+import { Offer } from './../../offers/entities/offer.entity';
+import { Wish } from './../../wishes/entities/wish.entity';
+//import { Wishlist } from './../../wishlists/entities/wishlist.entity';
+import { User } from './../../users/entities/user.entity';
 
 @Entity()
 export class Wishlist {
@@ -46,10 +52,11 @@ export class Wishlist {
 
   @Column({
     type: 'varchar',
+    nullable: true,
   })
   @IsUrl()
   image: string;
 
-  @Column()
-  items: Array<string>;
+  @OneToMany(() => Wish, (wish) => wish.id)
+  items: Wish[];
 }
