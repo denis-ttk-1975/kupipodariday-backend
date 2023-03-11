@@ -1,9 +1,19 @@
 import { Injectable } from '@nestjs/common';
+import { Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
+
 import { CreateOfferDto } from './dto/create-offer.dto';
 import { UpdateOfferDto } from './dto/update-offer.dto';
 
+import { Offer } from './entities/offer.entity';
+
 @Injectable()
 export class OffersService {
+  constructor(
+    @InjectRepository(Offer)
+    private studentRepository: Repository<Offer>,
+  ) {}
+
   create(createOfferDto: CreateOfferDto) {
     return 'This action adds a new offer';
   }

@@ -7,10 +7,12 @@ import {
   Param,
   Delete,
 } from '@nestjs/common';
+
 import { OffersService } from './offers.service';
 import { CreateOfferDto } from './dto/create-offer.dto';
 import { UpdateOfferDto } from './dto/update-offer.dto';
 
+import { Offer } from './entities/offer.entity';
 @Controller('offers')
 export class OffersController {
   constructor(private readonly offersService: OffersService) {}
