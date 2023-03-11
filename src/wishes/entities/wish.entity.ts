@@ -89,4 +89,7 @@ export class Wish {
   @Column({ type: 'integer', nullable: true })
   @IsInt()
   copied: number;
+
+  @ManyToOne(() => Wishlist, (wishlist) => wishlist.items)
+  wishlist: Wishlist;
 }
