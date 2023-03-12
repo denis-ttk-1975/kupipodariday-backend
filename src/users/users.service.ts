@@ -4,6 +4,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { FindQueryUsersDto } from './dto/find-query-user.dto';
 
 import { User } from './entities/user.entity';
 
@@ -11,26 +12,33 @@ import { User } from './entities/user.entity';
 export class UsersService {
   constructor(
     @InjectRepository(User)
-    private studentRepository: Repository<User>,
+    private userRepository: Repository<User>,
   ) {}
 
-  create(createUserDto: CreateUserDto) {
-    return 'This action adds a new user';
+  create(user: CreateUserDto): Promise<User> {
+    // добавить bcrypt хеширование
+    return this.userRepository.save(user);
   }
 
   findAll() {
-    return `This action returns all users`;
+    return this.userRepository.find();
   }
 
   findOne(id: number) {
-    return `This action returns a #${id} user`;
+    return this.userRepository.findOneBy({ id });
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
+  findOneByQuery({ query }: FindQueryUsersDto) {
+    return this.userRepository.find({
+      where: [{ email: query }, { username: query }],
+    });
+  }
+
+  update(id: number, userNewData: UpdateUserDto): Promise<any> {
+    return this.userRepository.update(id, userNewData);
   }
 
   remove(id: number) {
-    return `This action removes a #${id} user`;
+    return this.userRepository.delete({ id });
   }
 }

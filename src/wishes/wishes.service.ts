@@ -11,26 +11,27 @@ import { Wish } from './entities/wish.entity';
 export class WishesService {
   constructor(
     @InjectRepository(Wish)
-    private studentRepository: Repository<Wish>,
+    private wishRepository: Repository<Wish>,
   ) {}
 
-  create(createWishDto: CreateWishDto) {
-    return 'This action adds a new wish';
+  create(wish: CreateWishDto): Promise<Wish> {
+    //return 'This action adds a new wish';
+    return this.wishRepository.save(wish);
   }
 
   findAll() {
-    return `This action returns all wishes`;
+    return this.wishRepository.find();
   }
 
   findOne(id: number) {
-    return `This action returns a #${id} wish`;
+    return this.wishRepository.findOneBy({ id });
   }
 
-  update(id: number, updateWishDto: UpdateWishDto) {
-    return `This action updates a #${id} wish`;
+  update(id: number, wishNewData: UpdateWishDto): Promise<any> {
+    return this.wishRepository.update(id, wishNewData);
   }
 
   remove(id: number) {
-    return `This action removes a #${id} wish`;
+    return this.wishRepository.delete({ id });
   }
 }

@@ -58,5 +58,5 @@ export class Wishlist {
   image: string;
 
   @OneToMany(() => Wish, (wish) => wish.id)
-  items: Wish[];
+  items: number[];
 }

@@ -11,26 +11,26 @@ import { Wishlist } from './entities/wishlist.entity';
 export class WishlistsService {
   constructor(
     @InjectRepository(Wishlist)
-    private studentRepository: Repository<Wishlist>,
+    private wishlistRepository: Repository<Wishlist>,
   ) {}
 
-  create(createWishlistDto: CreateWishlistDto) {
-    return 'This action adds a new wishlist';
+  create(wishlist: CreateWishlistDto): Promise<Wishlist> {
+    return this.wishlistRepository.save(wishlist);
   }
 
   findAll() {
-    return `This action returns all wishlists`;
+    return this.wishlistRepository.find();
   }
 
   findOne(id: number) {
-    return `This action returns a #${id} wishlist`;
+    return this.wishlistRepository.findOneBy({ id });
   }
 
-  update(id: number, updateWishlistDto: UpdateWishlistDto) {
-    return `This action updates a #${id} wishlist`;
+  update(id: number, wishlistNewData: UpdateWishlistDto): Promise<any> {
+    return this.wishlistRepository.update(id, wishlistNewData);
   }
 
   remove(id: number) {
-    return `This action removes a #${id} wishlist`;
+    return this.wishlistRepository.delete({ id });
   }
 }

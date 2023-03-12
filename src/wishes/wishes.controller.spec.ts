@@ -7,6 +7,7 @@ describe('WishesController', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
+      imports: [WishesService],
       controllers: [WishesController],
       providers: [WishesService],
     }).compile();

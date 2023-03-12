@@ -11,7 +11,7 @@ import { Offer } from './entities/offer.entity';
 export class OffersService {
   constructor(
     @InjectRepository(Offer)
-    private studentRepository: Repository<Offer>,
+    private offerRepository: Repository<Offer>,
   ) {}
 
   create(createOfferDto: CreateOfferDto) {
