@@ -14,23 +14,23 @@ export class OffersService {
     private offerRepository: Repository<Offer>,
   ) {}
 
-  create(createOfferDto: CreateOfferDto) {
-    return 'This action adds a new offer';
+  create(offer: CreateOfferDto): Promise<Offer> {
+    return this.offerRepository.save(offer);
   }
 
   findAll() {
-    return `This action returns all offers`;
+    return this.offerRepository.find();
   }
 
   findOne(id: number) {
-    return `This action returns a #${id} offer`;
+    return this.offerRepository.findOneBy({ id });
   }
 
-  update(id: number, updateOfferDto: UpdateOfferDto) {
-    return `This action updates a #${id} offer`;
+  update(id: number, offerNewData: UpdateOfferDto) {
+    return this.offerRepository.update(id, offerNewData);
   }
 
   remove(id: number) {
-    return `This action removes a #${id} offer`;
+    return this.offerRepository.delete({ id });
   }
 }
