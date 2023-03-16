@@ -25,10 +25,12 @@ export class UsersService {
   }
 
   findOne(id: number) {
+    console.log('id = ', id);
     return this.userRepository.findOneBy({ id });
   }
 
-  findOneByQuery({ query }: FindQueryUsersDto) {
+  findOneByQuery(query: any) {
+    console.log('query222=', query);
     return this.userRepository.find({
       where: [{ email: query }, { username: query }],
     });

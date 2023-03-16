@@ -6,6 +6,7 @@ import {
   Patch,
   Param,
   Delete,
+  Query,
 } from '@nestjs/common';
 
 import { UsersService } from './users.service';
@@ -23,12 +24,24 @@ export class UsersController {
   }
 
   @Get()
+  findOneByQuery(@Query() query?: any) {
+    console.log('query=', query);
+    if (!query.hasOwnProperty('email') || !query.hasOwnProperty('username')) {
+      console.log('возвратим все!!!');
+    }
+    return this.usersService.findOneByQuery(query);
+  }
+
+  @Get()
   findAll() {
+    console.log('возвратим все!!!');
+    console.log('возвратим все!!!');
     return this.usersService.findAll();
   }
 
   @Get(':id')
   findOne(@Param('id') id: string) {
+    console.log('id111=', id);
     return this.usersService.findOne(+id);
   }
 
