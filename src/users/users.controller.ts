@@ -24,19 +24,19 @@ export class UsersController {
   }
 
   @Get()
+  findAll() {
+    console.log('возвратим все!!!');
+    console.log('возвратим все!!!');
+    return this.usersService.findAll();
+  }
+
+  @Get()
   findOneByQuery(@Query() query?: any) {
     console.log('query=', query);
     if (!query.hasOwnProperty('email') || !query.hasOwnProperty('username')) {
       console.log('возвратим все!!!');
     }
     return this.usersService.findOneByQuery(query);
-  }
-
-  @Get()
-  findAll() {
-    console.log('возвратим все!!!');
-    console.log('возвратим все!!!');
-    return this.usersService.findAll();
   }
 
   @Get(':id')
