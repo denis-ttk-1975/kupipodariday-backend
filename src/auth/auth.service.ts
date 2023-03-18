@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, HttpException } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 
@@ -23,7 +23,13 @@ export class AuthService {
       const { password, ...result } = user[0];
       return result;
     }
-    return null;
+    throw new HttpException(
+      {
+        status: 401,
+        error: 'Некорректная пара логин и пароль',
+      },
+      409,
+    );
   }
 
   signin(user: User): { access_token: string } {
