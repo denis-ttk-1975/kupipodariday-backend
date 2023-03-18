@@ -23,20 +23,26 @@ export class UsersController {
     return this.usersService.create(createUserDto);
   }
 
-  @Get()
-  findAll() {
-    console.log('возвратим все!!!');
-    console.log('возвратим все!!!');
-    return this.usersService.findAll();
-  }
+  // @Get()
+  // findAll() {
+  //   console.log('возвратим все!!!');
+  //   console.log('возвратим все!!!');
+  //   return this.usersService.findAll();
+  // }
 
   @Get()
-  findOneByQuery(@Query() query?: any) {
+  findEntitiesAllOrByQuery(@Query() query?: any) {
     console.log('query=', query);
-    if (!query.hasOwnProperty('email') || !query.hasOwnProperty('username')) {
+    if (!query.hasOwnProperty('email') && !query.hasOwnProperty('username')) {
       console.log('возвратим все!!!');
+      return this.usersService.findAll();
     }
-    return this.usersService.findOneByQuery(query);
+    if (query.hasOwnProperty('email')) {
+      return this.usersService.findOneByQuery(query.email);
+    }
+    if (query.hasOwnProperty('username')) {
+      return this.usersService.findOneByQuery(query.username);
+    }
   }
 
   @Get(':id')

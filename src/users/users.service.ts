@@ -36,8 +36,9 @@ export class UsersService {
     });
   }
 
-  update(id: number, userNewData: UpdateUserDto): Promise<any> {
-    return this.userRepository.update(id, userNewData);
+  async update(id: number, userNewData: UpdateUserDto): Promise<any> {
+    await this.userRepository.update(id, userNewData);
+    return this.userRepository.findOneBy({ id });
   }
 
   remove(id: number) {
