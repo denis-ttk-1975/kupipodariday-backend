@@ -1,4 +1,12 @@
-import { Controller, Post, Req, Body, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Req,
+  Res,
+  Body,
+  UseGuards,
+  HttpException,
+} from '@nestjs/common';
 
 import { CreateUserDto } from './../users/dto/create-user.dto';
 import { UsersService } from './../users/users.service';
@@ -13,9 +21,28 @@ export class AuthController {
   ) {}
 
   @Post('signup')
-  async signup(@Body() createUserDto: CreateUserDto) {
-    const user = await this.usersService.create(createUserDto);
-    return this.authService.signin(user);
+  async signup(
+    @Body() newUser: CreateUserDto,
+    // @Res({ passthrough: true }) response: Response,
+  ) {
+    const isUsernameExist = await this.usersService.findOneByQuery(
+      newUser.username,
+    );
+    console.log('isUsernameExist: ', isUsernameExist);
+
+    const isEmailExist = await this.usersService.findOneByQuery(newUser.email);
+    console.log('isEmailExist: ', isEmailExist);
+    if (!!isUsernameExist.length || !!isEmailExist.length) {
+      throw new HttpException(
+        {
+          status: 409,
+          error: 'Пользователь с таким email или username уже зарегистрирован',
+        },
+        409,
+      );
+    }
+    const user = await this.usersService.create(newUser);
+    return user;
   }
 
   @UseGuards(LocalGuard)
