@@ -6,6 +6,7 @@ import {
   Patch,
   Param,
   Delete,
+  Req,
 } from '@nestjs/common';
 
 import { WishesService } from './wishes.service';
@@ -19,8 +20,9 @@ export class WishesController {
   constructor(private readonly wishesService: WishesService) {}
 
   @Post()
-  create(@Body() createWishDto: CreateWishDto) {
-    return this.wishesService.create(createWishDto);
+  create(@Body() createWishDto: CreateWishDto, @Req() req): Promise<Wish> {
+    console.log(createWishDto.price);
+    return this.wishesService.create(createWishDto, req.user);
   }
 
   @Get()

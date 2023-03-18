@@ -68,7 +68,7 @@ export class User {
 
   @Column({
     type: 'varchar',
-    select: false,
+    // select: false,
   })
   password: string;
 
