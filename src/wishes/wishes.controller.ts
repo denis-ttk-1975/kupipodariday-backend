@@ -26,12 +26,23 @@ export class WishesController {
   @Post()
   create(@Body() createWishDto: CreateWishDto, @Req() req) {
     console.log(createWishDto.price);
+    console.log('req.user: ', req.user);
     return this.wishesService.create(createWishDto, req.user);
   }
 
   @Get()
   findAll() {
     return this.wishesService.findAll();
+  }
+
+  @Get('top')
+  findTop(): Promise<Wish[]> {
+    return this.wishesService.findTop();
+  }
+
+  @Get('last')
+  findLast(): Promise<Wish[]> {
+    return this.wishesService.findLast();
   }
 
   @UseGuards(JwtGuard)
@@ -50,16 +61,6 @@ export class WishesController {
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.wishesService.remove(+id);
-  }
-
-  @Get('top')
-  findTop(): Promise<Wish[]> {
-    return this.wishesService.findTop();
-  }
-
-  @Get('last')
-  findLast(): Promise<Wish[]> {
-    return this.wishesService.findLast();
   }
 
   @UseGuards(JwtGuard)
