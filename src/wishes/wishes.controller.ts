@@ -61,4 +61,12 @@ export class WishesController {
   findLast(): Promise<Wish[]> {
     return this.wishesService.findLast();
   }
+
+  @UseGuards(JwtGuard)
+  @Post(':id/copy')
+  async copy(@Req() req, @Param('id') id: string) {
+    const copiedWish = await this.wishesService.findOne(+id);
+    const dataForNewWish = await this.wishesService.copyWish(copiedWish);
+    return this.wishesService.create(dataForNewWish, req.user);
+  }
 }
