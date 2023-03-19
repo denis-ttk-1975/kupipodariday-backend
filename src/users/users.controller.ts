@@ -23,18 +23,6 @@ import { User } from './entities/user.entity';
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  // @Post()
-  // create(@Body() createUserDto: CreateUserDto) {
-  //   return this.usersService.create(createUserDto);
-  // }
-
-  // @Get()
-  // findAll() {
-  //   console.log('возвратим все!!!');
-  //   console.log('возвратим все!!!');
-  //   return this.usersService.findAll();
-  // }
-
   @Get()
   findEntitiesAllOrByQuery(@Query() query?: any) {
     console.log('query=', query);
@@ -50,16 +38,10 @@ export class UsersController {
     }
   }
 
-  // @Get(':id')
-  // findOne(@Param('id') id: string) {
-  //   console.log('id111=', id);
-  //   return this.usersService.findOne(+id);
+  // @Patch(':id')
+  // update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
+  //   return this.usersService.update(+id, updateUserDto);
   // }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.usersService.update(+id, updateUserDto);
-  }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
@@ -67,7 +49,35 @@ export class UsersController {
   }
 
   @Get('me')
-  async me(@Req() req) {
-    return await this.usersService.findOne(req.user.id);
+  async findMe(@Req() req) {
+    const user = await this.usersService.findOne(req.user.id);
+    const { password, ...result } = user;
+
+    return result;
+  }
+
+  @Patch('me')
+  async patchMe(@Req() req, @Body() updateUserDto: UpdateUserDto) {
+    await this.usersService.update(req.user.id, updateUserDto);
+    const user = await this.usersService.findOne(req.user.id);
+    const { password, ...result } = user;
+
+    return result;
+  }
+
+  @Get(':username')
+  async findUserByName(@Param('username') username: string) {
+    const user = await this.usersService.findOneByName(username);
+    const { password, ...result } = user[0];
+
+    return result;
+  }
+
+  @Post('find')
+  async findUserByNameOrEmail(@Body() body: { query: string }) {
+    const user = await this.usersService.findOneByQuery(body.query);
+    const { password, ...result } = user[0];
+
+    return result;
   }
 }
