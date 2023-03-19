@@ -73,7 +73,7 @@ export class Wish {
   @IsNumber({ maxDecimalPlaces: 2 })
   raised: number;
 
-  @ManyToOne(() => User, (user) => user.id)
+  @ManyToOne(() => User, (user) => user.wishes)
   owner: User;
 
   @Column({
