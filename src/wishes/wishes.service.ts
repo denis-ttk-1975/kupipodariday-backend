@@ -6,7 +6,7 @@ import { CreateWishDto } from './dto/create-wish.dto';
 import { UpdateWishDto } from './dto/update-wish.dto';
 
 import { Wish } from './entities/wish.entity';
-import { User } from 'src/users/entities/user.entity';
+import { User } from './../users/entities/user.entity';
 
 @Injectable()
 export class WishesService {
