@@ -6,6 +6,9 @@ import {
   UpdateDateColumn,
   OneToMany,
   ManyToOne,
+  JoinTable,
+  ManyToMany,
+  JoinColumn,
 } from 'typeorm';
 import {
   Contains,
@@ -58,7 +61,8 @@ export class Wishlist {
   @IsUrl()
   image: string;
 
-  @OneToMany(() => Wish, (wish) => wish.id)
+  @ManyToMany(() => Wish)
+  @JoinTable()
   items: Wish[];
 
   @ManyToOne(() => User, (user) => user.wishlists)
