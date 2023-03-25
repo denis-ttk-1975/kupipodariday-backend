@@ -22,12 +22,13 @@ export class WishlistsService {
     const selectedWishes = await this.wishesService.findFromIdArray({
       where: { id: In(wishlist.items) },
     });
-
+    console.log('selectedWishes: ', selectedWishes);
     const newWishlist = await this.wishlistRepository.create({
       ...wishlist,
       owner: user,
       items: selectedWishes,
     });
+    console.log('newWishlist: ', newWishlist);
 
     return this.wishlistRepository.save(newWishlist);
   }
@@ -53,15 +54,18 @@ export class WishlistsService {
 
   async update(id: number, wishlistNewData: UpdateWishlistDto): Promise<any> {
     if (Object.keys(wishlistNewData).includes('items')) {
+      console.log(1);
       const selectedWishes = await this.wishesService.findFromIdArray({
         where: { id: In(wishlistNewData.items) },
       });
+      console.log('selectedWishes: ', selectedWishes);
       await this.wishlistRepository.update(id, {
         ...wishlistNewData,
-
         items: selectedWishes,
       });
+      console.log(3);
     } else {
+      console.log(2);
       const editedWishlist = await this.wishlistRepository.find({
         where: { id },
         relations: {
@@ -69,11 +73,14 @@ export class WishlistsService {
           owner: true,
         },
       });
+      console.log('editedWishlist: ', editedWishlist);
       const selectedWishes = editedWishlist[0].items;
+      console.log('selectedWishes: ', selectedWishes);
       await this.wishlistRepository.update(id, {
         ...wishlistNewData,
         items: selectedWishes,
       });
+      console.log(4);
     }
     return this.wishlistRepository.find({
       where: { id },

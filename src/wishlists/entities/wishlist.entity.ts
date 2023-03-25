@@ -61,7 +61,7 @@ export class Wishlist {
   @IsUrl()
   image: string;
 
-  @ManyToMany(() => Wish)
+  @OneToMany(() => Wish, (wish) => wish.wishlist)
   @JoinTable()
   items: Wish[];
 
