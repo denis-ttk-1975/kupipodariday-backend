@@ -39,6 +39,8 @@ export class UsersService {
   }
 
   async update(id: number, userNewData: UpdateUserDto): Promise<any> {
+    console.log('userNewData: ', userNewData);
+
     await this.userRepository.update(id, userNewData);
     return this.userRepository.findOneBy({ id });
   }

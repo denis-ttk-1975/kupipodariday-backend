@@ -76,11 +76,16 @@ export class WishlistsService {
       console.log('editedWishlist: ', editedWishlist);
       const selectedWishes = editedWishlist[0].items;
       console.log('selectedWishes: ', selectedWishes);
+      console.log(4);
+      console.log({
+        ...wishlistNewData,
+        items: [...selectedWishes],
+      });
+      console.log(5);
       await this.wishlistRepository.update(id, {
         ...wishlistNewData,
         items: selectedWishes,
       });
-      console.log(4);
     }
     return this.wishlistRepository.find({
       where: { id },
@@ -99,6 +104,7 @@ export class WishlistsService {
         owner: true,
       },
     });
+    console.log('deletedWishList: ', deletedWishList);
     await this.wishlistRepository.delete({ id });
     return deletedWishList;
   }
