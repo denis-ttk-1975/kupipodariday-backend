@@ -15,7 +15,7 @@ import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 
-import { JwtGuard } from '../auth/jwt.guard';
+import { JwtGuard } from './../auth/jwt.guard';
 
 import { User } from './entities/user.entity';
 @UseGuards(JwtGuard)
