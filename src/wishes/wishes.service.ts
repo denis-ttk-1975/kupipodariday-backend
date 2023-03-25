@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Repository } from 'typeorm';
+import { Repository, FindManyOptions } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 
 import { CreateWishDto } from './dto/create-wish.dto';
@@ -76,5 +76,9 @@ export class WishesService {
 
     await this.wishRepository.update(wish.id, { copied: addCopiesNumber });
     return dataWish;
+  }
+
+  async findFromIdArray(item: FindManyOptions<Wish>) {
+    return this.wishRepository.find(item);
   }
 }

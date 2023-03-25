@@ -28,7 +28,7 @@ export class AuthService {
         status: 401,
         error: 'Некорректная пара логин и пароль',
       },
-      409,
+      401,
     );
   }
 

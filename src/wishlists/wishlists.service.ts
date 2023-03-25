@@ -1,21 +1,35 @@
 import { Injectable } from '@nestjs/common';
-import { Repository } from 'typeorm';
+import { Repository, Any } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 
 import { CreateWishlistDto } from './dto/create-wishlist.dto';
 import { UpdateWishlistDto } from './dto/update-wishlist.dto';
 
 import { Wishlist } from './entities/wishlist.entity';
+import { User } from './../users/entities/user.entity';
+
+import { WishesService } from './../wishes/wishes.service';
 
 @Injectable()
 export class WishlistsService {
   constructor(
     @InjectRepository(Wishlist)
     private wishlistRepository: Repository<Wishlist>,
+    private wishesService: WishesService,
   ) {}
 
-  create(wishlist: CreateWishlistDto): Promise<Wishlist> {
-    return this.wishlistRepository.save(wishlist);
+  async create(user: User, wishlist: CreateWishlistDto): Promise<Wishlist> {
+    const selectedWishes = await this.wishesService.findFromIdArray({
+      where: { id: Any(wishlist.items) },
+    });
+
+    const newWishlist = await this.wishlistRepository.create({
+      owner: user,
+      items: selectedWishes,
+      ...wishlist,
+    });
+
+    return this.wishlistRepository.save(newWishlist);
   }
 
   findAll() {
@@ -23,14 +37,35 @@ export class WishlistsService {
   }
 
   findOne(id: number) {
-    return this.wishlistRepository.findOneBy({ id });
+    return this.wishlistRepository.find({
+      where: { id },
+      relations: {
+        items: true,
+        owner: true,
+      },
+    });
   }
 
-  update(id: number, wishlistNewData: UpdateWishlistDto): Promise<any> {
-    return this.wishlistRepository.update(id, wishlistNewData);
+  async update(id: number, wishlistNewData: UpdateWishlistDto): Promise<any> {
+    await this.wishlistRepository.update(id, wishlistNewData);
+    return this.wishlistRepository.find({
+      where: { id },
+      relations: {
+        items: true,
+        owner: true,
+      },
+    });
   }
 
-  remove(id: number) {
-    return this.wishlistRepository.delete({ id });
+  async remove(id: number) {
+    const deletedWishList = await this.wishlistRepository.find({
+      where: { id },
+      relations: {
+        items: true,
+        owner: true,
+      },
+    });
+    await this.wishlistRepository.delete({ id });
+    return deletedWishList;
   }
 }

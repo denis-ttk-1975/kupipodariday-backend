@@ -5,6 +5,7 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   OneToMany,
+  ManyToOne,
 } from 'typeorm';
 import {
   Contains,
@@ -59,4 +60,7 @@ export class Wishlist {
 
   @OneToMany(() => Wish, (wish) => wish.id)
   items: number[];
+
+  @ManyToOne(() => User, (user) => user.wishlists)
+  owner: User;
 }
