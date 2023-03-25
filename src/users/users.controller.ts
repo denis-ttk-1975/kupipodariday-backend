@@ -80,14 +80,14 @@ export class UsersController {
     return result;
   }
 
+  @Get('me/wishes')
+  findWishesOfCurrentUser(@Req() req) {
+    return this.wishesService.findWishesByUserId(req.user.id);
+  }
+
   @Get(':username/wishes')
   async findWishesByUserName(@Param('username') username: string) {
     const user = await this.usersService.findOneByName(username);
     return await this.wishesService.findWishesByUserId(user[0].id);
-  }
-
-  @Get('me/wishes')
-  findWishesOfCurrentUser(@Req() req) {
-    return this.wishesService.findWishesByUserId(req.user.id);
   }
 }
