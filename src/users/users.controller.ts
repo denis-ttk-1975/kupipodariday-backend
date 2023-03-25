@@ -14,6 +14,7 @@ import {
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { WishesService } from './../wishes/wishes.service';
 
 import { JwtGuard } from './../auth/jwt.guard';
 
@@ -21,7 +22,10 @@ import { User } from './entities/user.entity';
 @UseGuards(JwtGuard)
 @Controller('users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(
+    private readonly usersService: UsersService,
+    private wishesService: WishesService,
+  ) {}
 
   @Get()
   findEntitiesAllOrByQuery(@Query() query?: any) {
@@ -37,11 +41,6 @@ export class UsersController {
       return this.usersService.findOneByQuery(query.username);
     }
   }
-
-  // @Patch(':id')
-  // update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-  //   return this.usersService.update(+id, updateUserDto);
-  // }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
@@ -79,5 +78,16 @@ export class UsersController {
     const { password, ...result } = user[0];
 
     return result;
+  }
+
+  @Get(':username/wishes')
+  async findWishesByUserName(@Param('username') username: string) {
+    const user = await this.usersService.findOneByName(username);
+    return await this.wishesService.findWishesByUserId(user[0].id);
+  }
+
+  @Get('me/wishes')
+  findWishesOfCurrentUser(@Req() req) {
+    return this.wishesService.findWishesByUserId(req.user.id);
   }
 }

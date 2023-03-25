@@ -81,4 +81,14 @@ export class WishesService {
   async findFromIdArray(item: FindManyOptions<Wish>) {
     return this.wishRepository.find(item);
   }
+
+  async findWishesByUserId(id: number) {
+    return this.wishRepository.find({
+      where: { owner: { id: id } },
+      relations: {
+        owner: true,
+        offers: true,
+      },
+    });
+  }
 }
