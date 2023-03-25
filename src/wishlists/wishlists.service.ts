@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Repository, Any } from 'typeorm';
+import { Repository, Any, In } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 
 import { CreateWishlistDto } from './dto/create-wishlist.dto';
@@ -20,13 +20,13 @@ export class WishlistsService {
 
   async create(user: User, wishlist: CreateWishlistDto): Promise<Wishlist> {
     const selectedWishes = await this.wishesService.findFromIdArray({
-      where: { id: Any(wishlist.items) },
+      where: { id: In(wishlist.items) },
     });
 
     const newWishlist = await this.wishlistRepository.create({
+      ...wishlist,
       owner: user,
       items: selectedWishes,
-      ...wishlist,
     });
 
     return this.wishlistRepository.save(newWishlist);
@@ -47,7 +47,29 @@ export class WishlistsService {
   }
 
   async update(id: number, wishlistNewData: UpdateWishlistDto): Promise<any> {
-    await this.wishlistRepository.update(id, wishlistNewData);
+    if (Object.keys(wishlistNewData).includes('items')) {
+      const selectedWishes = await this.wishesService.findFromIdArray({
+        where: { id: In(wishlistNewData.items) },
+      });
+      await this.wishlistRepository.update(id, {
+        ...wishlistNewData,
+
+        items: selectedWishes,
+      });
+    } else {
+      const editedWishlist = await this.wishlistRepository.find({
+        where: { id },
+        relations: {
+          items: true,
+          owner: true,
+        },
+      });
+      const selectedWishes = editedWishlist[0].items;
+      await this.wishlistRepository.update(id, {
+        ...wishlistNewData,
+        items: selectedWishes,
+      });
+    }
     return this.wishlistRepository.find({
       where: { id },
       relations: {

@@ -14,6 +14,9 @@ import {
   IsArray,
   ArrayNotEmpty,
 } from 'class-validator';
+
+import { Wish } from './../../wishes/entities/wish.entity';
+
 export class CreateWishlistDto {
   @IsString()
   @Length(1, 250)

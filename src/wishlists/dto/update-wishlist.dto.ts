@@ -16,6 +16,8 @@ import {
   ArrayNotEmpty,
 } from 'class-validator';
 
+import { Wish } from './../../wishes/entities/wish.entity';
+
 import { CreateWishlistDto } from './create-wishlist.dto';
 
 export class UpdateWishlistDto extends PartialType(CreateWishlistDto) {

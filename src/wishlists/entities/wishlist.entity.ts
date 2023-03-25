@@ -59,7 +59,7 @@ export class Wishlist {
   image: string;
 
   @OneToMany(() => Wish, (wish) => wish.id)
-  items: number[];
+  items: Wish[];
 
   @ManyToOne(() => User, (user) => user.wishlists)
   owner: User;
