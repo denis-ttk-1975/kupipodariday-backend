@@ -38,7 +38,7 @@ export class WishlistsController {
     const wishlist = await this.wishlistsService.findOne(+id);
     const userId = req.user.id;
     const wishlistOwner = wishlist[0].owner.id;
-    if (userId === wishlistOwner) {
+    if (userId != wishlistOwner) {
       throw new HttpException(
         {
           status: 403,
@@ -59,7 +59,7 @@ export class WishlistsController {
     const wishlist = await this.wishlistsService.findOne(+id);
     const userId = req.user.id;
     const wishlistOwner = wishlist[0].owner.id;
-    if (userId === wishlistOwner) {
+    if (userId != wishlistOwner) {
       throw new HttpException(
         {
           status: 403,
@@ -76,7 +76,7 @@ export class WishlistsController {
     const wishlist = await this.wishlistsService.findOne(+id);
     const userId = req.user.id;
     const wishlistOwner = wishlist[0].owner.id;
-    if (userId === wishlistOwner) {
+    if (userId != wishlistOwner) {
       throw new HttpException(
         {
           status: 403,
