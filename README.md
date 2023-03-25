@@ -1,3 +1,4 @@
-# КупиПодариДай
+# KupiPodariDai
 
-Стартеркит проекта разработки бэкенд сервиса вишлистов КупиПодариДай
+Back-end with Nest.js Framework.
+Used tools and technics - Nest, webpack, npm, yarn, RTypeScript, Jest, TypeORM, Postgres DB
