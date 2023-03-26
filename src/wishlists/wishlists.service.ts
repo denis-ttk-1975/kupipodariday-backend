@@ -56,18 +56,14 @@ export class WishlistsService {
 
   async update(id: number, wishlistNewData: UpdateWishlistDto): Promise<any> {
     if (Object.keys(wishlistNewData).includes('items')) {
-      console.log(1);
       const selectedWishes = await this.wishesService.findFromIdArray({
         where: { id: In(wishlistNewData.items) },
       });
-      // console.log('selectedWishes: ', selectedWishes);
       await this.wishlistRepository.update(id, {
         ...wishlistNewData,
         items: selectedWishes,
       });
-      console.log(3);
     } else {
-      console.log(2);
       const editedWishlist = await this.wishlistRepository.find({
         where: { id },
         relations: {
@@ -75,15 +71,8 @@ export class WishlistsService {
           owner: true,
         },
       });
-      // console.log('editedWishlist: ', editedWishlist);
       const selectedWishes = editedWishlist[0].items;
-      console.log('selectedWishes: ', selectedWishes);
-      console.log(4);
-      console.log({
-        ...wishlistNewData,
-        items: [...selectedWishes],
-      });
-      console.log(5);
+
       await this.wishlistRepository.update(id, {
         ...wishlistNewData,
         items: selectedWishes,
