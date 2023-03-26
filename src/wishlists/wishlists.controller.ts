@@ -74,17 +74,21 @@ export class WishlistsController {
   @Delete(':id')
   async remove(@Param('id') id: string, @Req() req) {
     const wishlist = await this.wishlistsService.findOne(+id);
+    console.log('wishlist: ', wishlist);
     const userId = req.user.id;
-    const wishlistOwner = wishlist[0].owner.id;
-    if (userId != wishlistOwner) {
-      throw new HttpException(
-        {
-          status: 403,
-          error: 'запрошенный лист желаний принадлежит другому пользователю',
-        },
-        403,
-      );
-    }
+    // const wishlistOwner = wishlist[0].owner.id;
+    // console.log('wishlistOwner: ', wishlistOwner);
+
+    // if (userId != wishlistOwner) {
+    //   throw new HttpException(
+    //     {
+    //       status: 403,
+    //       error: 'запрошенный лист желаний принадлежит другому пользователю',
+    //     },
+    //     403,
+    //   );
+    // }
+    console.log(1444);
     return this.wishlistsService.remove(+id);
   }
 }

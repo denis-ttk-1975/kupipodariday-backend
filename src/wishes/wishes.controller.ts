@@ -25,8 +25,8 @@ export class WishesController {
   @UseGuards(JwtGuard)
   @Post()
   create(@Body() createWishDto: CreateWishDto, @Req() req) {
-    console.log(createWishDto.price);
-    console.log('req.user: ', req.user);
+    // console.log(createWishDto.price);
+    // console.log('req.user: ', req.user);
     return this.wishesService.create(createWishDto, req.user);
   }
 

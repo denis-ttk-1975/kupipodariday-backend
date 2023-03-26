@@ -22,13 +22,13 @@ export class WishlistsService {
     const selectedWishes = await this.wishesService.findFromIdArray({
       where: { id: In(wishlist.items) },
     });
-    console.log('selectedWishes: ', selectedWishes);
+    // console.log('selectedWishes: ', selectedWishes);
     const newWishlist = await this.wishlistRepository.create({
       ...wishlist,
       owner: user,
       items: selectedWishes,
     });
-    console.log('newWishlist: ', newWishlist);
+    // console.log('newWishlist: ', newWishlist);
 
     return this.wishlistRepository.save(newWishlist);
   }
@@ -42,14 +42,16 @@ export class WishlistsService {
     });
   }
 
-  findOne(id: number) {
-    return this.wishlistRepository.find({
+  async findOne(id: number) {
+    const user = await this.wishlistRepository.find({
       where: { id },
       relations: {
         items: true,
         owner: true,
       },
     });
+    // console.log('user: ', user);
+    return user;
   }
 
   async update(id: number, wishlistNewData: UpdateWishlistDto): Promise<any> {
@@ -58,7 +60,7 @@ export class WishlistsService {
       const selectedWishes = await this.wishesService.findFromIdArray({
         where: { id: In(wishlistNewData.items) },
       });
-      console.log('selectedWishes: ', selectedWishes);
+      // console.log('selectedWishes: ', selectedWishes);
       await this.wishlistRepository.update(id, {
         ...wishlistNewData,
         items: selectedWishes,
@@ -73,7 +75,7 @@ export class WishlistsService {
           owner: true,
         },
       });
-      console.log('editedWishlist: ', editedWishlist);
+      // console.log('editedWishlist: ', editedWishlist);
       const selectedWishes = editedWishlist[0].items;
       console.log('selectedWishes: ', selectedWishes);
       console.log(4);
@@ -104,7 +106,7 @@ export class WishlistsService {
         owner: true,
       },
     });
-    console.log('deletedWishList: ', deletedWishList);
+    // console.log('deletedWishList: ', deletedWishList);
     await this.wishlistRepository.delete({ id });
     return deletedWishList;
   }

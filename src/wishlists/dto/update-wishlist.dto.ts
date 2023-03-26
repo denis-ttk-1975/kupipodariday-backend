@@ -32,8 +32,8 @@ export class UpdateWishlistDto extends PartialType(CreateWishlistDto) {
   // @IsOptional()
   // @IsUrl()
   // image: string;
-  @IsOptional()
-  @IsArray()
-  @ArrayNotEmpty()
-  items: number[];
+  // @IsOptional()
+  // @IsArray()
+  // @ArrayNotEmpty()
+  // items: number[];
 }

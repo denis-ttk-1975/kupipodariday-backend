@@ -28,10 +28,10 @@ export class AuthController {
     const isUsernameExist = await this.usersService.findOneByQuery(
       newUser.username,
     );
-    console.log('isUsernameExist: ', isUsernameExist);
+    // console.log('isUsernameExist: ', isUsernameExist);
 
     const isEmailExist = await this.usersService.findOneByQuery(newUser.email);
-    console.log('isEmailExist: ', isEmailExist);
+    // console.log('isEmailExist: ', isEmailExist);
     if (!!isUsernameExist.length || !!isEmailExist.length) {
       throw new HttpException(
         {

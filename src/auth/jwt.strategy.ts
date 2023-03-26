@@ -24,11 +24,11 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
    * В JWT стратегии в качестве параметра метод получает полезную нагрузку из токена
    */
   async validate(jwtPayload: { sub: number }) {
-    console.log('jwtPayload: ', jwtPayload);
+    // console.log('jwtPayload: ', jwtPayload);
     /* В subject токена будем передавать идентификатор пользователя */
 
     const user = await this.usersService.findOne(jwtPayload.sub);
-    console.log('user jwt auth: ', user);
+    // console.log('user jwt auth: ', user);
 
     if (!user) {
       console.log('нет авторизации');

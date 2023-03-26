@@ -27,19 +27,19 @@ export class UsersService {
   }
 
   findOne(id: number) {
-    console.log('id = ', id);
+    // console.log('id = ', id);
     return this.userRepository.findOneBy({ id });
   }
 
   findOneByQuery(query: string) {
-    console.log('query222=', query);
+    // console.log('query222=', query);
     return this.userRepository.find({
       where: [{ email: query }, { username: query }],
     });
   }
 
   async update(id: number, userNewData: UpdateUserDto): Promise<any> {
-    console.log('userNewData: ', userNewData);
+    // console.log('userNewData: ', userNewData);
 
     await this.userRepository.update(id, userNewData);
     return this.userRepository.findOneBy({ id });
