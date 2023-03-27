@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { ConfigModule } from '@nestjs/config';
 
 import { AppController } from './app.controller';
 import { UsersModule } from './users/users.module';
@@ -11,6 +12,7 @@ import { Wishlist } from './wishlists/entities/wishlist.entity';
 import { Wish } from './wishes/entities/wish.entity';
 import { User } from './users/entities/user.entity';
 import { Offer } from './offers/entities/offer.entity';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -28,6 +30,7 @@ import { Offer } from './offers/entities/offer.entity';
     WishesModule,
     WishlistsModule,
     OffersModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [],

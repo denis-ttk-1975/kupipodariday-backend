@@ -68,7 +68,7 @@ export class User {
 
   @Column({
     type: 'varchar',
-    select: false,
+    // select: false,
   })
   password: string;
 
@@ -78,6 +78,6 @@ export class User {
   @OneToMany(() => Offer, (offer) => offer.user)
   offers: Offer[];
 
-  @OneToMany(() => Wishlist, (wishlist) => wishlist.id)
+  @OneToMany(() => Wishlist, (wishlist) => wishlist.owner)
   wishlists: Wishlist[];
 }
