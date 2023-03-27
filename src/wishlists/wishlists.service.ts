@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Repository, Any, In } from 'typeorm';
+import { Repository, In } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 
 import { CreateWishlistDto } from './dto/create-wishlist.dto';
@@ -55,29 +55,37 @@ export class WishlistsService {
   }
 
   async update(id: number, wishlistNewData: UpdateWishlistDto): Promise<any> {
-    let editedWishlist, selectedWishes;
+    let selectedWishes;
+
+    const editedWishlist = await this.wishlistRepository.findOne({
+      where: { id },
+      relations: {
+        items: true,
+        owner: true,
+      },
+    });
+
     if (Object.keys(wishlistNewData).includes('items')) {
       selectedWishes = await this.wishesService.findFromIdArray({
         where: { id: In(wishlistNewData.items) },
       });
-      editedWishlist = await this.wishlistRepository.findOne({
-        where: { id },
-        relations: {
-          items: true,
-          owner: true,
-        },
-      });
 
-      await this.wishlistRepository.update(id, {
-        name: wishlistNewData.name ? wishlistNewData.name : editedWishlist.name,
-        description: wishlistNewData.description
-          ? wishlistNewData.description
-          : editedWishlist.description,
-        image: wishlistNewData.image
-          ? wishlistNewData.image
-          : editedWishlist.image,
+      const { items, ...restWishListData } = wishlistNewData;
+      Object.assign(editedWishlist, {
+        ...restWishListData,
         items: selectedWishes,
       });
+      await this.wishlistRepository.save(editedWishlist);
+      // await this.wishlistRepository.update(id, {
+      //   name: wishlistNewData.name ? wishlistNewData.name : editedWishlist.name,
+      //   description: wishlistNewData.description
+      //     ? wishlistNewData.description
+      //     : editedWishlist.description,
+      //   image: wishlistNewData.image
+      //     ? wishlistNewData.image
+      //     : editedWishlist.image,
+      //   items: selectedWishes,
+      // });
     } else {
       const editedWishlist = await this.wishlistRepository.findOne({
         where: { id },
