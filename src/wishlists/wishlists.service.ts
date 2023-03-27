@@ -22,13 +22,14 @@ export class WishlistsService {
     const selectedWishes = await this.wishesService.findFromIdArray({
       where: { id: In(wishlist.items) },
     });
-    // console.log('selectedWishes: ', selectedWishes);
+    console.log('selectedWishes - create: ', selectedWishes);
     const newWishlist = await this.wishlistRepository.create({
       ...wishlist,
       owner: user,
       items: selectedWishes,
     });
-    // console.log('newWishlist: ', newWishlist);
+    /* Logging the newWishlist object to the console. */
+    console.log('newWishlist: ', newWishlist);
 
     return this.wishlistRepository.save(newWishlist);
   }
@@ -50,32 +51,50 @@ export class WishlistsService {
         owner: true,
       },
     });
-    // console.log('user: ', user);
     return user;
   }
 
   async update(id: number, wishlistNewData: UpdateWishlistDto): Promise<any> {
+    let editedWishlist, selectedWishes;
     if (Object.keys(wishlistNewData).includes('items')) {
-      const selectedWishes = await this.wishesService.findFromIdArray({
+      selectedWishes = await this.wishesService.findFromIdArray({
         where: { id: In(wishlistNewData.items) },
       });
-      await this.wishlistRepository.update(id, {
-        ...wishlistNewData,
-        items: selectedWishes,
-      });
-    } else {
-      const editedWishlist = await this.wishlistRepository.find({
+      editedWishlist = await this.wishlistRepository.findOne({
         where: { id },
         relations: {
           items: true,
           owner: true,
         },
       });
-      const selectedWishes = editedWishlist[0].items;
 
       await this.wishlistRepository.update(id, {
-        ...wishlistNewData,
+        name: wishlistNewData.name ? wishlistNewData.name : editedWishlist.name,
+        description: wishlistNewData.description
+          ? wishlistNewData.description
+          : editedWishlist.description,
+        image: wishlistNewData.image
+          ? wishlistNewData.image
+          : editedWishlist.image,
         items: selectedWishes,
+      });
+    } else {
+      const editedWishlist = await this.wishlistRepository.findOne({
+        where: { id },
+        relations: {
+          items: true,
+          owner: true,
+        },
+      });
+
+      await this.wishlistRepository.update(id, {
+        name: wishlistNewData.name ? wishlistNewData.name : editedWishlist.name,
+        description: wishlistNewData.description
+          ? wishlistNewData.description
+          : editedWishlist.description,
+        image: wishlistNewData.image
+          ? wishlistNewData.image
+          : editedWishlist.image,
       });
     }
     return this.wishlistRepository.find({
@@ -95,7 +114,6 @@ export class WishlistsService {
         owner: true,
       },
     });
-    // console.log('deletedWishList: ', deletedWishList);
     await this.wishlistRepository.delete({ id });
     return deletedWishList;
   }
