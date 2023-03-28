@@ -1,4 +1,8 @@
-import { Injectable, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  BadRequestException,
+  ForbiddenException,
+} from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 
@@ -21,6 +25,12 @@ export class OffersService {
   async create(offer: CreateOfferDto, user: User) {
     const wish = await this.wishesService.findOne(offer.itemId);
 
+    if (wish.owner.id === user.id) {
+      throw new ForbiddenException(
+        'Вы не можете вносить деньги на собственные подарки',
+      );
+    }
+
     if (wish.raised === wish.price) {
       throw new BadRequestException('Нужная сумма уже собрана');
     }
@@ -34,7 +44,7 @@ export class OffersService {
     }
     const newRaisedAmount = wish.raised + offer.amount;
 
-    await this.wishesService.update(wish.id, { raised: newRaisedAmount });
+    await this.wishesService.update(wish.id, { raised: newRaisedAmount }, user);
 
     const newOffer = await this.offerRepository.create({
       user,

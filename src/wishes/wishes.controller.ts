@@ -53,14 +53,18 @@ export class WishesController {
 
   @UseGuards(JwtGuard)
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateWishDto: UpdateWishDto) {
-    return this.wishesService.update(+id, updateWishDto);
+  update(
+    @Req() req,
+    @Param('id') id: string,
+    @Body() updateWishDto: UpdateWishDto,
+  ) {
+    return this.wishesService.update(+id, updateWishDto, req.user);
   }
 
   @UseGuards(JwtGuard)
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.wishesService.remove(+id);
+  remove(@Req() req, @Param('id') id: string) {
+    return this.wishesService.remove(+id, req.user);
   }
 
   @UseGuards(JwtGuard)

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, ForbiddenException } from '@nestjs/common';
 import { Repository, In } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 
@@ -54,9 +54,11 @@ export class WishlistsService {
     return user;
   }
 
-  async update(id: number, wishlistNewData: UpdateWishlistDto): Promise<any> {
-    let selectedWishes;
-
+  async update(
+    id: number,
+    wishlistNewData: UpdateWishlistDto,
+    user: User,
+  ): Promise<any> {
     const editedWishlist = await this.wishlistRepository.findOne({
       where: { id },
       relations: {
@@ -64,6 +66,13 @@ export class WishlistsService {
         owner: true,
       },
     });
+    if (user.id !== editedWishlist.owner.id) {
+      throw new ForbiddenException(
+        'Вы не можете редактировать чужие списки подарков',
+      );
+    }
+
+    let selectedWishes;
 
     if (Object.keys(wishlistNewData).includes('items')) {
       selectedWishes = await this.wishesService.findFromIdArray({
@@ -114,14 +123,19 @@ export class WishlistsService {
     });
   }
 
-  async remove(id: number) {
-    const deletedWishList = await this.wishlistRepository.find({
+  async remove(id: number, user: User) {
+    const deletedWishList = await this.wishlistRepository.findOne({
       where: { id },
       relations: {
         items: true,
         owner: true,
       },
     });
+    if (user.id !== deletedWishList.owner.id) {
+      throw new ForbiddenException(
+        'Вы не можете редактировать чужие списки подарков',
+      );
+    }
     await this.wishlistRepository.delete({ id });
     return deletedWishList;
   }

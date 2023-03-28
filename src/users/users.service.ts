@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, ForbiddenException } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
@@ -17,6 +17,15 @@ export class UsersService {
   ) {}
 
   async create(user: CreateUserDto): Promise<User> {
+    const samePropsUserCheck = await this.userRepository.find({
+      where: [{ email: user.email }, { username: user.username }],
+    });
+
+    if (samePropsUserCheck.length) {
+      throw new ForbiddenException(
+        'Пользователь с таким именем уже существует',
+      );
+    }
     const hashedPassword = await bcrypt.hash(user.password, 10);
     const userWithHashedPassword = { ...user, password: hashedPassword };
     return this.userRepository.save(userWithHashedPassword);
@@ -40,6 +49,15 @@ export class UsersService {
 
   async update(id: number, userNewData: UpdateUserDto): Promise<any> {
     // console.log('userNewData: ', userNewData);
+    const samePropsUserCheck = await this.userRepository.find({
+      where: [{ email: userNewData.email }, { username: userNewData.username }],
+    });
+
+    if (samePropsUserCheck.length) {
+      throw new ForbiddenException(
+        'Пользователь с таким именем уже существует',
+      );
+    }
 
     await this.userRepository.update(id, userNewData);
     return this.userRepository.findOneBy({ id });

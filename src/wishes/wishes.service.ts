@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, ForbiddenException } from '@nestjs/common';
 import { Repository, FindManyOptions } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 
@@ -35,12 +35,38 @@ export class WishesService {
     });
   }
 
-  async update(id: number, wishNewData: UpdateWishDto) {
+  async update(id: number, wishNewData: UpdateWishDto, user: User) {
+    const editedWish = await this.wishRepository.findOne({
+      where: { id },
+      relations: {
+        owner: true,
+        offers: true,
+      },
+    });
+    if (user.id !== editedWish.owner.id) {
+      throw new ForbiddenException('Вы не можете редактировать чужие подарки');
+    }
+    if (wishNewData.price && editedWish.raised > 0) {
+      throw new ForbiddenException(
+        'Вы не можете изменять стоимость подарка, если уже есть желающие скинуться',
+      );
+    }
     await this.wishRepository.update(id, wishNewData);
     return {};
   }
 
-  remove(id: number) {
+  async remove(id: number, user: User) {
+    const deletingWish = await this.wishRepository.findOne({
+      where: { id },
+      relations: {
+        owner: true,
+        offers: true,
+      },
+    });
+    if (user.id !== deletingWish.owner.id) {
+      throw new ForbiddenException('Вы не можете редактировать чужие подарки');
+    }
+
     return this.wishRepository.delete({ id });
   }
 
