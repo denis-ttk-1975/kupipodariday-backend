@@ -90,7 +90,32 @@ export class WishesService {
     });
   }
 
-  async copyWish(wish: Wish) {
+  async copyWish(wish: Wish, user: User) {
+    if (user.id === wish.owner.id) {
+      throw new ForbiddenException('Вы не можете копировать свой подарок');
+    }
+
+    const arrayForSameWishes = await this.wishRepository.find({
+      where: [{ name: wish.name }],
+      relations: {
+        owner: true,
+      },
+    });
+
+    let hasUserCopied = false;
+
+    arrayForSameWishes.forEach((item) => {
+      if (+item.owner.id === +user.id) {
+        hasUserCopied = true;
+      }
+    });
+
+    if (hasUserCopied) {
+      throw new ForbiddenException(
+        'Вы уже создали у себя или скопировали себе такой же подарок',
+      );
+    }
+
     const dataWish = {
       name: wish.name,
       image: wish.image,
