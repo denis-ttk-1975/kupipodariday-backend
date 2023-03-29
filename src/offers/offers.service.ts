@@ -3,7 +3,7 @@ import {
   BadRequestException,
   ForbiddenException,
 } from '@nestjs/common';
-import { Repository } from 'typeorm';
+import { Repository, Connection } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 
 import { CreateOfferDto } from './dto/create-offer.dto';
@@ -42,17 +42,37 @@ export class OffersService {
         }`,
       );
     }
-    const newRaisedAmount = wish.raised + offer.amount;
+    await this.offerRepository.manager.transaction(
+      async (transactionalEntityManager) => {
+        const newRaisedAmount = wish.raised + offer.amount;
 
-    await this.wishesService.update(wish.id, { raised: newRaisedAmount }, user);
+        await this.wishesService.update(
+          wish.id,
+          { raised: newRaisedAmount },
+          user,
+        );
 
-    const newOffer = await this.offerRepository.create({
-      user,
-      ...offer,
-      item: wish,
-    });
+        const newOffer = await this.offerRepository.create({
+          user,
+          ...offer,
+          item: wish,
+        });
 
-    await this.offerRepository.save(newOffer);
+        await transactionalEntityManager.save(newOffer);
+      },
+    );
+
+    // const newRaisedAmount = wish.raised + offer.amount;
+
+    // await this.wishesService.update(wish.id, { raised: newRaisedAmount }, user);
+
+    // const newOffer = await this.offerRepository.create({
+    //   user,
+    //   ...offer,
+    //   item: wish,
+    // });
+
+    // await this.offerRepository.save(newOffer);
 
     return {};
   }

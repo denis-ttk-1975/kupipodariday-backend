@@ -43,7 +43,10 @@ export class WishesService {
         offers: true,
       },
     });
-    if (user.id !== editedWish.owner.id) {
+    if (
+      user.id !== editedWish.owner.id &&
+      !wishNewData.hasOwnProperty('raised')
+    ) {
       throw new ForbiddenException('Вы не можете редактировать чужие подарки');
     }
     if (wishNewData.price && editedWish.raised > 0) {
@@ -64,7 +67,7 @@ export class WishesService {
       },
     });
     if (user.id !== deletingWish.owner.id) {
-      throw new ForbiddenException('Вы не можете редактировать чужие подарки');
+      throw new ForbiddenException('Вы не можете удалять чужие подарки');
     }
 
     return this.wishRepository.delete({ id });
