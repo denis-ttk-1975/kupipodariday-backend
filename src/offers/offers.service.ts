@@ -42,6 +42,9 @@ export class OffersService {
         }`,
       );
     }
+
+    // не знаю правильно ли я понял как сделать транзакцию для двух репозиториев
+
     await this.offerRepository.manager.transaction(
       async (transactionalEntityManager) => {
         const newRaisedAmount = wish.raised + offer.amount;
