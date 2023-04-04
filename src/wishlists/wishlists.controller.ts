@@ -68,7 +68,7 @@ export class WishlistsController {
         403,
       );
     }
-    return this.wishlistsService.update(+id, updateWishlistDto);
+    return this.wishlistsService.update(+id, updateWishlistDto, req.user);
   }
 
   @Delete(':id')
@@ -89,6 +89,6 @@ export class WishlistsController {
     //   );
     // }
     console.log(1444);
-    return this.wishlistsService.remove(+id);
+    return this.wishlistsService.remove(+id, req.user);
   }
 }

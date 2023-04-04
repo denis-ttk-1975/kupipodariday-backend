@@ -1,5 +1,9 @@
-import { Injectable, BadRequestException } from '@nestjs/common';
-import { Repository } from 'typeorm';
+import {
+  Injectable,
+  BadRequestException,
+  ForbiddenException,
+} from '@nestjs/common';
+import { Repository, Connection } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 
 import { CreateOfferDto } from './dto/create-offer.dto';
@@ -21,6 +25,12 @@ export class OffersService {
   async create(offer: CreateOfferDto, user: User) {
     const wish = await this.wishesService.findOne(offer.itemId);
 
+    if (wish.owner.id === user.id) {
+      throw new ForbiddenException(
+        'Вы не можете вносить деньги на собственные подарки',
+      );
+    }
+
     if (wish.raised === wish.price) {
       throw new BadRequestException('Нужная сумма уже собрана');
     }
@@ -32,17 +42,40 @@ export class OffersService {
         }`,
       );
     }
-    const newRaisedAmount = wish.raised + offer.amount;
 
-    await this.wishesService.update(wish.id, { raised: newRaisedAmount });
+    // не знаю правильно ли я понял как сделать транзакцию для двух репозиториев
 
-    const newOffer = await this.offerRepository.create({
-      user,
-      ...offer,
-      item: wish,
-    });
+    await this.offerRepository.manager.transaction(
+      async (transactionalEntityManager) => {
+        const newRaisedAmount = wish.raised + offer.amount;
 
-    await this.offerRepository.save(newOffer);
+        await this.wishesService.update(
+          wish.id,
+          { raised: newRaisedAmount },
+          user,
+        );
+
+        const newOffer = await this.offerRepository.create({
+          user,
+          ...offer,
+          item: wish,
+        });
+
+        await transactionalEntityManager.save(newOffer);
+      },
+    );
+
+    // const newRaisedAmount = wish.raised + offer.amount;
+
+    // await this.wishesService.update(wish.id, { raised: newRaisedAmount }, user);
+
+    // const newOffer = await this.offerRepository.create({
+    //   user,
+    //   ...offer,
+    //   item: wish,
+    // });
+
+    // await this.offerRepository.save(newOffer);
 
     return {};
   }
