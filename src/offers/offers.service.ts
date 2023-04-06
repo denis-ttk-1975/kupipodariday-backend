@@ -2,8 +2,9 @@ import {
   Injectable,
   BadRequestException,
   ForbiddenException,
+  InternalServerErrorException,
 } from '@nestjs/common';
-import { Repository, Connection } from 'typeorm';
+import { Repository, DataSource } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 
 import { CreateOfferDto } from './dto/create-offer.dto';
@@ -11,6 +12,7 @@ import { UpdateOfferDto } from './dto/update-offer.dto';
 
 import { Offer } from './entities/offer.entity';
 import { User } from './../users/entities/user.entity';
+import { Wish } from './../wishes/entities/wish.entity';
 
 import { WishesService } from './../wishes/wishes.service';
 
@@ -20,6 +22,7 @@ export class OffersService {
     @InjectRepository(Offer)
     private offerRepository: Repository<Offer>,
     private wishesService: WishesService,
+    private dataSource: DataSource,
   ) {}
 
   async create(offer: CreateOfferDto, user: User) {
@@ -45,25 +48,42 @@ export class OffersService {
 
     // не знаю правильно ли я понял как сделать транзакцию для двух репозиториев
 
-    await this.offerRepository.manager.transaction(
-      async (transactionalEntityManager) => {
-        const newRaisedAmount = wish.raised + offer.amount;
+    // await this.offerRepository.manager.transaction(
+    //   async (transactionalEntityManager) => {
+    //     const newRaisedAmount = wish.raised + offer.amount;
 
-        await this.wishesService.update(
-          wish.id,
-          { raised: newRaisedAmount },
-          user,
-        );
+    //     await this.wishesService.update(
+    //       wish.id,
+    //       { raised: newRaisedAmount },
+    //       user,
+    //     );
 
-        const newOffer = await this.offerRepository.create({
-          user,
-          ...offer,
-          item: wish,
-        });
+    //     const newOffer = await this.offerRepository.create({
+    //       user,
+    //       ...offer,
+    //       item: wish,
+    //     });
 
-        await transactionalEntityManager.save(newOffer);
-      },
-    );
+    //     await transactionalEntityManager.save(newOffer);
+    //   },
+    // );
+
+    //! внимание ты убрал this!!!
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+    try {
+      await queryRunner.manager.insert<Offer>(Offer, offer);
+      await queryRunner.manager.update<Wish>(Wish, wish.id, {
+        raised: wish.raised + offer.amount,
+      });
+      await queryRunner.commitTransaction();
+    } catch {
+      await queryRunner.rollbackTransaction();
+      throw new InternalServerErrorException('transaction not commited');
+    } finally {
+      await queryRunner.release();
+    }
 
     // const newRaisedAmount = wish.raised + offer.amount;
 
