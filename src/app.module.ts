@@ -37,5 +37,6 @@ import { AuthModule } from './auth/auth.module';
   providers: [],
 })
 export class AppModule {
-  constructor(private dataSource: DataSource) {}
+  // constructor(private dataSource: DataSource) {}
+  constructor() {}
 }

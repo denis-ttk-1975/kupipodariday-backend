@@ -38,7 +38,7 @@ export class OffersService {
       throw new BadRequestException('Нужная сумма уже собрана');
     }
 
-    if (wish.raised + offer.amount > wish.price) {
+    if (Number(wish.raised) + Number(offer.amount) > Number(wish.price)) {
       throw new BadRequestException(
         `Сумма заявки превысит необходимую сумму. Можно заявить не более ${
           wish.price - wish.raised
@@ -68,14 +68,17 @@ export class OffersService {
     //   },
     // );
 
-    //! внимание ты убрал this!!!
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
     try {
-      await queryRunner.manager.insert<Offer>(Offer, offer);
+      await queryRunner.manager.insert<Offer>(Offer, {
+        user,
+        ...offer,
+        item: wish,
+      });
       await queryRunner.manager.update<Wish>(Wish, wish.id, {
-        raised: wish.raised + offer.amount,
+        raised: Number(wish.raised) + Number(offer.amount),
       });
       await queryRunner.commitTransaction();
     } catch {
